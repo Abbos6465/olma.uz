@@ -4,6 +4,7 @@ import {useAuthStore} from "@/stores/auth.store";
 import {computed, type Ref, ref} from "vue";
 import AppInput from "@/components/ui/AppInput.vue";
 import type {LoginDataType} from "@/types";
+import AppForm from "@/components/ui/AppForm.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -39,40 +40,32 @@ const form: Ref<LoginDataType> = ref({
             width="500"
             rounded="lg"
         >
-
-          <AppInput
-              v-model="form.username"
-              label="Foydalanuvchi nomi"
-              placeholder="Foydalanuvchi nomini kiriting"
-              density="comfortable"
-              required
-          />
-          <AppInput
-              type="password"
-              icon="mdi-lock-outline"
-              label="Parol"
-              placeholder="Parolni kiriting"
-              density="comfortable"
-              required
-          />
-
-          <v-card
-              class="mb-12"
-              color="surface-variant"
-              variant="tonal"
-          >
-          </v-card>
-
-          <v-btn
-              class="mb-8"
-              color="blue"
-              size="large"
-              variant="tonal"
-              block
-          >
-            Log In
-          </v-btn>
-
+          <AppForm>
+            <AppInput
+                v-model="form.username"
+                label="Foydalanuvchi nomi"
+                placeholder="Foydalanuvchi nomini kiriting"
+                density="comfortable"
+                required
+            />
+            <AppInput
+                type="password"
+                icon="mdi-lock-outline"
+                label="Parol"
+                placeholder="Parolni kiriting"
+                density="comfortable"
+                required
+            />
+            <v-btn
+                class="mb-8"
+                color="blue"
+                size="large"
+                variant="tonal"
+                block
+            >
+              Log In
+            </v-btn>
+          </AppForm>
           <v-card-text class="text-center">
             <a
                 class="text-blue text-decoration-none"

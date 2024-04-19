@@ -48,6 +48,10 @@ const appendInnerClick = () => {
 const appendIcon = computed<string>(() => {
   if(props.type !== 'password') return ''
   return showPassword.value ? 'mdi-eye-off' : 'mdi-eye'
+});
+
+const rules = computed(() => {
+
 })
 
 </script>
@@ -79,6 +83,7 @@ const appendIcon = computed<string>(() => {
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
+      :required="required"
       variant="outlined"
       :density="density"
       :type="computedType"
