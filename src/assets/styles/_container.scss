@@ -1,0 +1,31 @@
+.container {
+  margin:  0 auto;
+
+  @include min-xl{
+    width: 1440px;
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+
+  @include max-xl{
+    width: 1170px;
+  }
+
+  @include max-lg{
+    width: 970px;
+  }
+
+  @include max-md{
+    width: 750px;
+  }
+
+  @include max-sm{
+    padding: 0 12px;
+    width: 100%;
+  }
+
+  @include max-xs{
+    padding: 0 10px;
+    width: 100%;
+  }
+}
