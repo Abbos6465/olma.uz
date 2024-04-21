@@ -2,7 +2,9 @@ import {defineStore} from "pinia";
 import type {Ref} from "vue";
 import {ref} from "vue";
 import type {LoginDataType, RegisterDataType} from "@/types";
+import {setAccessToken, removeAccessToken, getAccessToken} from "@/utils/local.storage";
 import authApi from "@/api/auth.api";
+import {tr} from "vuetify/locale";
 
 interface User {
     id: number
@@ -16,31 +18,43 @@ export const useAuthStore = defineStore('auth.store', () => {
     const isLoading:Ref<boolean> = ref(false);
     const user:Ref<User> = ref({});
 
-    const register = (data: RegisterDataType): void => {
+    const auth = async (type: 'login' | 'register', data: LoginDataType | RegisterDataType) => {
         isAuth.value = false;
         isLoading.value = true;
-        authApi.register(data).then(response => {
+        try{
+            const response: User & access_token = await (type === 'login' ? authApi.login(data) : authApi.register(data));
             isAuth.value = true;
-            console.log(response);
+            setAccessToken(response.access_token);
+            user.value = response.user;
+        }finally{
+            isLoading.value = false;
+        }
+    }
+
+    const me = (): void => {
+        if(!getAccessToken()) return
+        isAuth.value = true;
+        isLoading.value = true;
+        authApi.me().then((response: User) => {
+            user.value = response;
+        }).finally(() => {
+           isLoading.value = false;
+        });
+    }
+
+    const logout = ():void => {
+        isLoading.value = true;
+        authApi.logout().then(() => {
+            clearUser();
         }).finally(() => {
             isLoading.value = false;
         })
     }
 
-    const login = (data: LoginDataType):void => {
-
-    }
-
-    const logout = ():void => {
-
-    }
-
-    const me = (): void => {
-
-    }
-
     const clearUser = (): void => {
-
+        isAuth.value = false;
+        user.value = {};
+        removeAccessToken();
     }
 
     return {
@@ -48,8 +62,7 @@ export const useAuthStore = defineStore('auth.store', () => {
         isLoading,
         user,
         clearUser,
-        register,
-        login,
+        auth,
         logout,
         me
     }

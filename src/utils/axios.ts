@@ -4,7 +4,7 @@ import {useAuthStore} from "@/stores/auth.store";
 import {getAccessToken} from "@/utils/local.storage";
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: import.meta.env.API_URL,
+    baseURL: import.meta.env.VITE_API_URL,
     timeout: 60000
 });
 
@@ -28,15 +28,16 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
     ({data}) => {
-        return data;
+        return data.data;
     },
 
-    (error) => {
-        if (error.response && error.response.status === 401) {
+    ({response}) => {
+        console.log(response);
+        if (response && response.status === 401) {
             useAuthStore().clearUser();
         }
 
-        return Promise.reject(error.response)
+        return Promise.reject(response)
     }
 )
 export default axiosInstance

@@ -13,11 +13,12 @@ const routes: RouteRecordRaw[] = [
                 auth: true
             }
         },
+        redirect: {name: 'main'},
         children: [
             {
                 path: "/",
-                name: "main.index",
-                component: () => import("@/pages/MainIndex.vue")
+                name: "main",
+                component: () => import("@/pages/Main.vue")
             }
         ]
     },

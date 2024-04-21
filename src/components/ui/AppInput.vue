@@ -50,9 +50,26 @@ const appendIcon = computed<string>(() => {
   return showPassword.value ? 'mdi-eye-off' : 'mdi-eye'
 });
 
-const rules = computed(() => {
+const computedRules = computed(() => {
+  const rules:any = [];
+  if(props.required){
+    rules.push(
+     v => (props.type === 'text' ? !!v.trim() : !!v) || "To'ldirish majburiy maydon"
+    )
+  }
+  if(props.type === 'email'){
+    rules.push(
+        v => checkEmail(v) || "Noto'g'ri elektron pochta manzili"
+    )
+  }
 
-})
+  return rules;
+});
+
+const checkEmail = (value?:string): boolean => {
+  const regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(value.trim());
+}
 
 </script>
 
@@ -91,6 +108,7 @@ const rules = computed(() => {
       :prepend-inner-icon="icon"
       :append-inner-icon="appendIcon"
       @click:append-inner="appendInnerClick"
+      :rules="computedRules"
       class="app-input__input"
     >
     </VTextField>
@@ -101,11 +119,17 @@ const rules = computed(() => {
   .app-input{
     &__input{
       .v-input{
-        //&__details{
-        //  padding-inline: 0;
-        //  padding: 0;
-        //  min-height: unset;
-        //}
+        &__details{
+          padding-inline: 0;
+          padding: 0;
+          min-height: unset;
+        }
+      }
+
+      .v-messages{
+        &__message{
+          padding: 5px 0 12px;
+        }
       }
     }
   }

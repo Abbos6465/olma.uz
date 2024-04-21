@@ -1,30 +1,36 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
-import {computed, type Ref, ref} from "vue";
+import {onMounted, type Ref, ref} from "vue";
 import AppInput from "@/components/ui/AppInput.vue";
-import type {LoginDataType} from "@/types";
-import AppForm from "@/components/ui/AppForm.vue";
+import type {LoginDataType, RegisterDataType} from "@/types";
+import AppForm, {type ValidationType} from "@/components/ui/AppForm.vue";
+import {getAccessToken} from "@/utils/local.storage";
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const authTitle = computed<string>(() => {
-  switch (route.name) {
-    case 'login':
-      return "Tizimga kirish";
-    case 'register':
-      return "Ro'yxatdan o'tish"
-    default:
-      return ""
-  }
+const form: Ref<LoginDataType | RegisterDataType> = ref({
+  username: '',
+  email: '',
+  password: ''
 });
 
-const form: Ref<LoginDataType> = ref({
-  username: '',
-  password: ''
-})
+const validation = ref<ValidationType>({});
+
+const authHandler = async () => {
+  if(!(await validation.value?.validate())) return
+  authStore.auth(route.name, form.value).then(() => {
+    router.push({name: "main"});
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+onMounted(() => {
+  if(getAccessToken()) authStore.clearUser();
+});
 
 </script>
 
@@ -33,14 +39,14 @@ const form: Ref<LoginDataType> = ref({
     <div class="container">
       <div class="auth">
         <v-card
-            :title="authTitle"
+            :title="route.name === 'login' ? 'Tizimga kirish' : `Ro'yxatdan o'tish`"
             subtitle="olma.uz"
             class="mx-auto pa-8 pb-8 auth-card"
             elevation="8"
             width="500"
             rounded="lg"
         >
-          <AppForm>
+          <AppForm v-model:validation="validation">
             <AppInput
                 v-model="form.username"
                 label="Foydalanuvchi nomi"
@@ -49,6 +55,16 @@ const form: Ref<LoginDataType> = ref({
                 required
             />
             <AppInput
+                v-if="route.name === 'register'"
+                v-model="form.email"
+                type="email"
+                label="Email"
+                placeholder="Emailni kiriting"
+                density="comfortable"
+                required
+            />
+            <AppInput
+                v-model="form.password"
                 type="password"
                 icon="mdi-lock-outline"
                 label="Parol"
@@ -60,22 +76,22 @@ const form: Ref<LoginDataType> = ref({
                 class="mb-8"
                 color="blue"
                 size="large"
+                :loading="authStore.isLoading"
                 variant="tonal"
                 block
+                @click="authHandler"
             >
-              Log In
+              {{ route.name === 'login' ? "Kirish" : "Ro'yxatdan o'tish" }}
             </v-btn>
           </AppForm>
           <v-card-text class="text-center">
-            <a
+            <RouterLink
+                :to="{name: route.name === 'login' ? 'register' : 'login'}"
                 class="text-blue text-decoration-none"
-                href="#"
-                rel="noopener noreferrer"
-                target="_blank"
             >
-              Sign up now
+              {{ route.name === 'login' ? "Ro'yxatdan o'tish" : "Kirish" }}
               <v-icon icon="mdi-chevron-right"></v-icon>
-            </a>
+            </RouterLink>
           </v-card-text>
         </v-card>
       </div>
