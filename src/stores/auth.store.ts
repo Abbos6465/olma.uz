@@ -4,7 +4,6 @@ import {ref} from "vue";
 import type {LoginDataType, RegisterDataType} from "@/types";
 import {setAccessToken, removeAccessToken, getAccessToken} from "@/utils/local.storage";
 import authApi from "@/api/auth.api";
-import {tr} from "vuetify/locale";
 
 interface User {
     id: number
@@ -13,7 +12,7 @@ interface User {
     email: string
 }
 
-export const useAuthStore = defineStore('auth.store', () => {
+export const useAuthStore = defineStore('auth', () => {
     const isAuth:Ref<boolean> = ref(false);
     const isLoading:Ref<boolean> = ref(false);
     const user:Ref<User> = ref({});

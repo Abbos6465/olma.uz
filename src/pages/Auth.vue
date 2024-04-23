@@ -2,10 +2,11 @@
 import {useRoute, useRouter} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
 import {onMounted, type Ref, ref} from "vue";
-import AppInput from "@/components/ui/AppInput.vue";
+import AppInput, {type hintType} from "@/components/ui/AppInput.vue";
 import type {LoginDataType, RegisterDataType} from "@/types";
 import AppForm, {type ValidationType} from "@/components/ui/AppForm.vue";
 import {getAccessToken} from "@/utils/local.storage";
+import AppToast from "@/components/ui/app-toast/AppToast.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -18,14 +19,27 @@ const form: Ref<LoginDataType | RegisterDataType> = ref({
 });
 
 const validation = ref<ValidationType>({});
+const validationErrors = ref<LoginDataType | RegisterDataType>({})
 
 const authHandler = async () => {
   if(!(await validation.value?.validate())) return
   authStore.auth(route.name, form.value).then(() => {
     router.push({name: "main"});
-  }).catch((error) => {
-    console.log(error);
+  }).catch((error:any) => {
+    const errorData = error?.data ?? {}
+    switch (error?.status){
+      case 422: validationErrors.value = errorData?.errors; break;
+      case 404: console.log(errorData?.message); break;
+    }
   });
+}
+
+const setErrorHint = (hint?:string):hintType => {
+  if(!hint) return
+  return {
+    status: 'danger',
+    text: hint
+  }
 }
 
 onMounted(() => {
@@ -35,6 +49,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <AppToast/>
   <section class="auth-section">
     <div class="container">
       <div class="auth">
@@ -53,6 +68,7 @@ onMounted(() => {
                 placeholder="Foydalanuvchi nomini kiriting"
                 density="comfortable"
                 required
+                :hint="setErrorHint(validationErrors?.username)"
             />
             <AppInput
                 v-if="route.name === 'register'"
@@ -62,6 +78,7 @@ onMounted(() => {
                 placeholder="Emailni kiriting"
                 density="comfortable"
                 required
+                :hint="setErrorHint(validationErrors?.email)"
             />
             <AppInput
                 v-model="form.password"
@@ -70,6 +87,8 @@ onMounted(() => {
                 label="Parol"
                 placeholder="Parolni kiriting"
                 density="comfortable"
+                :min="6"
+                :hint="setErrorHint(validationErrors?.password)"
                 required
             />
             <v-btn

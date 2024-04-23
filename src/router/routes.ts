@@ -5,6 +5,7 @@ const routes: RouteRecordRaw[] = [
         path: "/",
         name: "main.layout",
         components: {
+            default: () => import("@/layouts/MainLayout.vue"),
             Header: () => import("@/components/layouts/Header.vue"),
             Footer: () => import("@/components/layouts/Footer.vue")
         },
@@ -23,14 +24,22 @@ const routes: RouteRecordRaw[] = [
         ]
     },
     {
-        path: "/login",
-        name: "login",
-        component: () => import("@/pages/Auth.vue"),
-    },
-    {
-        path: "/register",
-        name: "register",
-        component: () => import("@/pages/Auth.vue")
+        path: "/auth",
+        name: "login.layout",
+        component: () => import("@/layouts/AuthLayout.vue"),
+        redirect: {name: 'login'},
+        children: [
+            {
+                path: "/login",
+                name: "login",
+                component: () => import("@/pages/Auth.vue"),
+            },
+            {
+                path: "/register",
+                name: "register",
+                component: () => import("@/pages/Auth.vue")
+            },
+        ]
     },
     {
         path: "/test",

@@ -1,1 +1,1 @@
-<script setup lang="ts"></script><template></template><style scoped lang="scss"></style>
+<script setup lang="ts">import {VSnackbar} from "vuetify/components";import {onMounted} from "vue";onMounted(() => {  console.log(VSnackbar);})</script><template></template><style scoped lang="scss"></style>

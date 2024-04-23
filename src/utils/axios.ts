@@ -32,7 +32,6 @@ axiosInstance.interceptors.response.use(
     },
 
     ({response}) => {
-        console.log(response);
         if (response && response.status === 401) {
             useAuthStore().clearUser();
         }

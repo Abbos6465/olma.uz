@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import {generateRandomID} from "@/utils/helper";
-import {computed, ref, type Ref, useSlots} from "vue";
+import {computed, ref, type Ref, useSlots, watch} from "vue";
 import {vMaska} from "maska";
 
 type ValueType = string | number;
+
+export interface hintType {
+  text?: string,
+  status?: 'danger' | ''
+}
 
 interface Props {
   type?: string,
@@ -16,14 +21,16 @@ interface Props {
   value?: ValueType,
   density?: 'compact' | 'comfortable',
   icon?: string,
-  suffix?: string
+  suffix?: string,
+  hint?: {} | hintType,
+  min?: number
 }
 
 const model = defineModel<ValueType>();
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
-  density: 'compact'
+  density: 'compact',
 });
 
 const randomId:string = generateRandomID();
@@ -60,6 +67,12 @@ const computedRules = computed(() => {
   if(props.type === 'email'){
     rules.push(
         v => checkEmail(v) || "Noto'g'ri elektron pochta manzili"
+    )
+  }
+
+  if(!!props.min){
+    rules.push(
+        v => !(typeof(v) === 'string' && v.length<props.min) || `Maydon kamida ${props.min} ta belgidan iborat bo'lishi kerak`
     )
   }
 
@@ -109,6 +122,9 @@ const checkEmail = (value?:string): boolean => {
       :append-inner-icon="appendIcon"
       @click:append-inner="appendInnerClick"
       :rules="computedRules"
+      :hint="hint?.text"
+      persistent-hint
+      :error="hint?.status === 'danger'"
       class="app-input__input"
     >
     </VTextField>
