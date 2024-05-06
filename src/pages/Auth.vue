@@ -6,11 +6,12 @@ import AppInput, {type hintType} from "@/components/ui/AppInput.vue";
 import type {LoginDataType, RegisterDataType} from "@/types";
 import AppForm, {type ValidationType} from "@/components/ui/AppForm.vue";
 import {getAccessToken} from "@/utils/local.storage";
-import AppToast from "@/components/ui/app-toast/AppToast.vue";
+import useToast from "@/components/ui/app-toast/useToast";
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const {toast} = useToast();
 
 const form: Ref<LoginDataType | RegisterDataType> = ref({
   username: '',
@@ -24,12 +25,13 @@ const validationErrors = ref<LoginDataType | RegisterDataType>({})
 const authHandler = async () => {
   if(!(await validation.value?.validate())) return
   authStore.auth(route.name, form.value).then(() => {
+    toast.success({text: "Tizimga muvaffaqqiyatli kirildi"});
     router.push({name: "main"});
   }).catch((error:any) => {
     const errorData = error?.data ?? {}
     switch (error?.status){
       case 422: validationErrors.value = errorData?.errors; break;
-      case 404: console.log(errorData?.message); break;
+      case 404: toast.warning({text: errorData.message}); break;
     }
   });
 }
@@ -49,7 +51,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <AppToast/>
   <section class="auth-section">
     <div class="container">
       <div class="auth">

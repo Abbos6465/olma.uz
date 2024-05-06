@@ -3,11 +3,13 @@
 </script>
 
 <template>
-  <h1>
-    Header
-  </h1>
+  <header class=".header">
+    <div class="container">
+      Header
+    </div>
+  </header>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 
 </style>

@@ -4,11 +4,7 @@ const routes: RouteRecordRaw[] = [
     {
         path: "/",
         name: "main.layout",
-        components: {
-            default: () => import("@/layouts/MainLayout.vue"),
-            Header: () => import("@/components/layouts/Header.vue"),
-            Footer: () => import("@/components/layouts/Footer.vue")
-        },
+        component:  () => import("@/layouts/MainLayout.vue"),
         meta: {
             middleware: {
                 auth: true
@@ -19,7 +15,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: "/",
                 name: "main",
-                component: () => import("@/pages/main/MainIndex.vue")
+                component: () => import("@/pages/MainIndex.vue")
             }
         ]
     },

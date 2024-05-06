@@ -6,7 +6,9 @@ onMounted(() => {
 </script>
 
 <template>
- <h1>Salom</h1>
+ <div class="container">
+    Main page
+ </div>
 </template>
 
 <style lang="scss"></style>

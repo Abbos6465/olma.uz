@@ -3,9 +3,11 @@
 </script>
 
 <template>
-  <h1>
-    Footer
-  </h1>
+  <footer class="footer">
+    <div class="container">
+      Footer
+    </div>
+  </footer>
 </template>
 
 <style lang="scss">

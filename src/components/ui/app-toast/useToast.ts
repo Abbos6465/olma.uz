@@ -17,7 +17,7 @@ interface ToastParamsType {
 }
 
 interface InitParamsType extends  ToastParamsType {
-    type: 'success' | 'error' | 'warning' | 'loading';
+    type: 'success' | 'error' | 'warning';
 }
 
 export default () => {
@@ -35,12 +35,6 @@ export default () => {
             });
         },
         warning: (params: ToastParamsType): string => {
-            return init({
-                ...params,
-                type: "warning"
-            });
-        },
-        loading: (params: ToastParamsType): string => {
             return init({
                 ...params,
                 type: "warning"
@@ -65,8 +59,8 @@ export default () => {
     }
 
     const deleteFunction = (id: string) => {
-        const itemCollections: NodeList<HTMLDivElement> = document.querySelectorAll('.app-toast__item');
-        const foundedItem = [...itemCollections].find(el => el.id === id);
+        const itemCollections = document.querySelectorAll('.app-toast__item');
+        const foundedItem = Array.from(itemCollections).find((el: HTMLElement) => el.id === id);
 
 
 
