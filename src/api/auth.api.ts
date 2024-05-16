@@ -1,22 +1,30 @@
 import axios from "@/utils/axios";
-import type {RegisterDataType, LoginDataType} from "@/types";
+import type {RegisterDataType, LoginDataType, User} from "@/types/auth.type";
 
 const prefix: "/auth" = "/auth";
 
+interface AuthResponse {
+    access_token: string,
+    user: User
+}
+
 export default {
-    register(data: RegisterDataType){
-        return axios.post(`${prefix}/register`, data);
+    async register(registerData: RegisterDataType): Promise<AuthResponse>{
+        const {data} = await axios.post(`${prefix}/register`, registerData);
+        return data;
     },
 
-    login(data: LoginDataType){
-        return axios.post(`${prefix}/login`, data);
+    async login(loginData: LoginDataType): Promise<AuthResponse>{
+        const {data} = await axios.post(`${prefix}/login`, loginData);
+        return data;
     },
 
     logout(){
         return axios.get(`${prefix}/logout`);
     },
 
-    me(){
-        return axios.get(`${prefix}/me`);
+     async me(): Promise<User>{
+        const {data} = await axios.get(`${prefix}/me`);
+        return data;
     }
 }

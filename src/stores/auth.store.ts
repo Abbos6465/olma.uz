@@ -1,27 +1,24 @@
 import {defineStore} from "pinia";
 import type {Ref} from "vue";
 import {ref} from "vue";
-import type {LoginDataType, RegisterDataType} from "@/types";
+import type {LoginDataType, RegisterDataType, User} from "@/types/auth.type";
 import {setAccessToken, removeAccessToken, getAccessToken} from "@/utils/local.storage";
 import authApi from "@/api/auth.api";
-
-interface User {
-    id: number
-    role: string,
-    username: string,
-    email: string
-}
+import {useRouter} from "vue-router";
+import useToast from "@/components/ui/app-toast/useToast";
 
 export const useAuthStore = defineStore('auth', () => {
     const isAuth:Ref<boolean> = ref(false);
     const isLoading:Ref<boolean> = ref(false);
     const user:Ref<User> = ref({});
+    const router = useRouter();
+    const {toast} = useToast();
 
     const auth = async (type: 'login' | 'register', data: LoginDataType | RegisterDataType) => {
         isAuth.value = false;
         isLoading.value = true;
         try{
-            const response: User & access_token = await (type === 'login' ? authApi.login(data) : authApi.register(data));
+            const response = await (type === 'login' ? authApi.login(data) : authApi.register(data));
             isAuth.value = true;
             setAccessToken(response.access_token);
             user.value = response.user;
@@ -34,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
         if(!getAccessToken()) return
         isAuth.value = true;
         isLoading.value = true;
-        authApi.me().then((response: User) => {
+        authApi.me().then(response => {
             user.value = response;
         }).finally(() => {
            isLoading.value = false;
@@ -45,6 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
         isLoading.value = true;
         authApi.logout().then(() => {
             clearUser();
+            toast.success({text: "Tizimdan muvaffaqqiyatli chiqildi"})
         }).finally(() => {
             isLoading.value = false;
         })
@@ -54,6 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuth.value = false;
         user.value = {};
         removeAccessToken();
+        router.replace({path: "/login"});
     }
 
     return {

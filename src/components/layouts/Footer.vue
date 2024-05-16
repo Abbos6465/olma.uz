@@ -3,11 +3,11 @@
 </script>
 
 <template>
-  <footer class="footer">
+  <VFooter >
     <div class="container">
       Footer
     </div>
-  </footer>
+  </VFooter>
 </template>
 
 <style lang="scss">

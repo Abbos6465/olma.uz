@@ -1,5 +1,5 @@
 import {reactive, ref} from "vue";
-import {generateRandomID} from "@/utils/helper";
+import {findIndex, generateRandomID} from "@/utils/helper";
 
 interface Toast {
     id: string,
@@ -45,6 +45,8 @@ export default () => {
     const init = (params: InitParamsType): string => {
         const id: string = params?.id ?? generateRandomID();
 
+        if (items.find(el => el.id === id)) return
+
         items.push({
             id,
             text: params.text,
@@ -68,8 +70,8 @@ export default () => {
             return deleteFunction(id);
         }
 
-        const index: number = items.findIndex(item => item.id == id);
-        items.splice(index, 1);
+        const index: number = findIndex(items, 'id', id);
+        if(index !== -1) items.splice(index, 1);
     }
 
     return {

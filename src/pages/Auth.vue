@@ -26,7 +26,7 @@ const authHandler = async () => {
   if(!(await validation.value?.validate())) return
   authStore.auth(route.name, form.value).then(() => {
     toast.success({text: "Tizimga muvaffaqqiyatli kirildi"});
-    router.push({name: "main"});
+    router.push({name: "products"});
   }).catch((error:any) => {
     const errorData = error?.data ?? {}
     switch (error?.status){

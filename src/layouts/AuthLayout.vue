@@ -1,1 +1,1 @@
-<script setup lang="ts"></script><template><RouterView/></template><style scoped lang="scss"></style>
+<template>  <VMain>    <RouterView/>  </VMain></template><script setup lang="ts"></script>

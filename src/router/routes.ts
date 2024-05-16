@@ -10,12 +10,30 @@ const routes: RouteRecordRaw[] = [
                 auth: true
             }
         },
-        redirect: {name: 'main'},
+        redirect: {name: 'products'},
         children: [
             {
-                path: "/",
-                name: "main",
-                component: () => import("@/pages/MainIndex.vue")
+                path: "/products",
+                name: "products",
+                alias: "/",
+                component: () => import("@/pages/products/ProductsIndex.vue")
+            },
+            {
+                path: "/products/:id(\\d+)",
+                name: "product",
+                component: () => import("@/pages/products/ProductIdIndex.vue"),
+                children: [
+                    {
+                        path: "",
+                        name: "products.show",
+                        component: () => import("@/pages/products/productId/ProductShow.vue"),
+                    },
+                    {
+                        path: "update",
+                        name: "product.update",
+                        component: () => import("@/pages/products/productId/ProductUpdate.vue"),
+                    }
+                ]
             }
         ]
     },
@@ -28,6 +46,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: "/login",
                 name: "login",
+                alias: "",
                 component: () => import("@/pages/Auth.vue"),
             },
             {
@@ -39,6 +58,7 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: "/test",
+        name: "test",
         component: () => import("@/pages/Test.vue")
     }
 ];
