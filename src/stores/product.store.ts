@@ -1,15 +1,15 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
-import type {ProductsParams, ProductsType} from "@/types/product.type";
+import type {CategoryWidthBrandType, ProductsParams, ProductsType} from "@/types/product.type";
 import productApi from "@/api/product.api";
 
 export const useProductStore = defineStore("product", () => {
     const productsLoading = ref(false);
     const products = ref<ProductsType>({});
 
-    const fetchProducts = async (params:ProductsParams = {}) => {
+    const fetchProducts = (params:ProductsParams = {}) => {
         productsLoading.value = true;
-        await productApi.fetchProducts(params).then(response => {
+        productApi.fetchProducts(params).then(response => {
             products.value.data = response.data;
             products.value.meta = {
                 current_page: response.meta.current_page,
@@ -20,9 +20,36 @@ export const useProductStore = defineStore("product", () => {
         });
     }
 
+    const pendingDeletionProductId = ref<number | null>(null);
+    const deleteProduct = (id:number) => {
+        pendingDeletionProductId.value = id;
+        productApi.deleteProduct(id).then(response => {
+            toast.success({text: response});
+        }).finally(() => {
+            pendingDeletionProductId.value = null;
+        });
+    }
+
+    const categoriesWidthBrands = ref<CategoryWidthBrandType[]>([]);
+    const categoriesWidthBrandsLoading = ref(false);
+
+    const fetchCategoriesWithBrands = () => {
+        categoriesWidthBrandsLoading.value = true;
+        productApi.fetchCategoriesWithBrands().then(response => {
+            categoriesWidthBrands.value = response;
+        }).finally(() => {
+            categoriesWidthBrandsLoading.value = false;
+        });
+    }
+
     return {
         productsLoading,
         products,
-        fetchProducts
+        fetchProducts,
+        pendingDeletionProductId,
+        deleteProduct,
+        categoriesWidthBrands,
+        categoriesWidthBrandsLoading,
+        fetchCategoriesWithBrands
     }
 });

@@ -1,5 +1,5 @@
 import axios from "@/utils/axios";
-import type {ProductDataType, ProductsParams, ProductsType} from "@/types/product.type";
+import type {CategoryWidthBrandType, ProductDataType, ProductsParams, ProductsType} from "@/types/product.type";
 import {useAuthStore} from "@/stores/auth.store";
 
 const authStore = useAuthStore();
@@ -26,11 +26,7 @@ export default {
         return axios.delete(`${prefix}/${id}`);
     },
 
-    fetchProductsByCategory(id:number){
-        return axios.get(`${prefix}/category/${id}`);
-    },
-
-    fetchProductsByBrand(id: number){
-        return axios.get(`${prefix}/brand/${id}`)
+    fetchCategoriesWithBrands():Promise<CategoryWidthBrandType[]>{
+        return axios.get(`/categories-width-brands`);
     }
 }

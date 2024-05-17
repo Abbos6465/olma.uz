@@ -7,13 +7,13 @@ export interface ProductDataType {
     photo: File
 }
 
-interface Brand {
+interface BrandType {
     id: number,
     category_id: number,
     name: string
 }
 
-interface Category {
+interface CategoryType {
     id: number,
     name: string
 }
@@ -21,9 +21,9 @@ interface Category {
 export interface ProductType {
     id: number,
     photo?: string,
-    brand: Brand,
+    brand: BrandType,
     content: string,
-    category: Category,
+    category: CategoryType,
     price: number,
     title: string,
     user_id: number,
@@ -41,5 +41,12 @@ export interface ProductsType {
 }
 
 export interface ProductsParams{
-    page?: number
+    page?: number,
+    category_id?: number,
+    brand_id?: number
 }
+
+export interface CategoryWidthBrandType extends CategoryType{
+    brands: BrandType[]
+}
+

@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {useProductStore} from "@/stores/product.store";
+import {useRouter} from "vue-router";
 
+const router = useRouter();
 const drawerOpen = ref<boolean>(false);
+const productStore = useProductStore();
 
+onMounted(() => {
+  productStore.fetchCategoriesWithBrands();
+});
+
+const test = ref('');
 
 </script>
 
@@ -23,22 +32,47 @@ const drawerOpen = ref<boolean>(false);
     >
         Olma.uz
     </RouterLink>
-    <v-spacer></v-spacer>
+    <VSpacer></VSpacer>
 
     <template v-if="$vuetify.display.mdAndUp">
-      <v-btn icon="mdi-magnify" variant="text"></v-btn>
-
-      <v-btn icon="mdi-filter" variant="text"></v-btn>
+      <VBtn
+          icon="mdi-magnify"
+          variant="text"
+      ></VBtn>
     </template>
-
-    <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
   </VAppBar>
-  <v-navigation-drawer
+  <VNavigationDrawer
       v-model="drawerOpen"
       :location="$vuetify.display.mobile ? 'bottom' : undefined"
       temporary
+      width="300"
+      expand-on-hover
   >
-    <v-list>
-    </v-list>
-  </v-navigation-drawer>
+    <VList
+        v-model="test"
+        nav
+        variant="text"
+    >
+      <VListGroup
+        v-for="category in productStore.categoriesWidthBrands"
+        :key="`category-${category.id}`"
+      >
+        <template #activator>
+            <VListItem :value="`category-${category.id}`">
+              <VListItemTitle>
+                {{ category.name }}
+              </VListItemTitle>
+            </VListItem>
+        </template>
+        <VListItem
+          v-for="brand in category.brands"
+          :key="`brand-${brand.id}`"
+          :value="`brand-${brand.id}`"
+          :to="{name: 'products', query: {category_id: category.id, brand_id: brand.id}}"
+        >
+            {{ brand.name }}
+        </VListItem>
+      </VListGroup>
+    </VList>
+  </VNavigationDrawer>
 </template>

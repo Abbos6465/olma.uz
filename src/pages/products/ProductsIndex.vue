@@ -11,23 +11,20 @@ const route = useRoute();
 const productStore = useProductStore()
 const {toast} = useToast()
 
-const deleteLoading = ref(false);
 const deleteProduct = async (id:number) => {
-  deleteLoading.value = true;
-  await productApi.deleteProduct(id).then(response => {
-    toast.success({text: response});
-    fetchProducts();
-  }).finally(() => {
-    deleteLoading.value = false;
-  });
+  await productStore.deleteProduct(id);
+  fetchProducts();
 }
 
 const fetchProducts = () => {
   const params = {};
   const page = passingQueryNumber(route.query?.page);
-  if(page){
-    params['page'] = page;
-  }
+  const category_id = passingQueryNumber(route.query?.category_id);
+  const brand_id = passingQueryNumber(route.query?.brand_id);
+  if(page) params['page'] = page;
+  if(category_id) params['category_id'] = category_id;
+  if(brand_id) params['brand_id'] = brand_id;
+
   productStore.fetchProducts(params);
 }
 
@@ -40,62 +37,85 @@ watchEffect(() => {
 <template>
   <div class="container">
     <VRow>
-      <VCol
-          cols="3"
-          v-for="product in productStore.products.data"
-          :key="product.id"
-      >
-        <VCard
-            tag="a"
-            :to="{name: 'products.show', params: {id: product.id}}"
-            hover
-            class="pb-3"
-            min-height="450"
+      <template v-if="productStore.productsLoading">
+        <VCol
+            cols="3"
+            v-for="i in 4"
         >
-          <VImg
-              height="250"
-              src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-              cover
-          />
-          <VCardItem>
-            <VCardTitle>
-              {{ product.title }}
-            </VCardTitle>
-            <VCardSubtitle>
-              {{ `${product.brand.name}(${product.category.name})` }}
-            </VCardSubtitle>
-            <div class="mt-4 font-weight-bold text-2xl text-blue">
-              {{ product.price }} $
-            </div>
-            <div class="min-h-20">
-              {{ product.content }}
-            </div>
-            <div
-                v-if="product.can_change"
-                class="d-flex flex-wrap justify-end align-center ga-3 mt-8"
-            >
-              <VBtn
-                  size="small"
-                  tag="a"
-                  :to="{name: 'product.update', params: {id: product.id}}"
-                  color="warning"
-                  prepend-icon="$edit"
+          <VSkeletonLoader
+              class="card-loader"
+              elevation="4"
+              type="image, article, actions"
+          ></VSkeletonLoader>
+        </VCol>
+      </template>
+      <template v-else>
+        <VCol
+            cols="3"
+            v-for="product in productStore.products.data"
+            :key="product.id"
+        >
+          <VCard
+              tag="a"
+              :to="{name: 'products.show', params: {id: product.id}}"
+              hover
+              class="pb-3"
+              min-height="450"
+          >
+            <VImg
+                height="250"
+                src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+                cover
+            />
+            <VCardItem>
+              <VCardTitle>
+                {{ product.title }}
+              </VCardTitle>
+              <VCardSubtitle>
+                {{ `${product.brand.name}(${product.category.name})` }}
+              </VCardSubtitle>
+              <div class="mt-4 font-weight-bold text-2xl text-blue">
+                {{ product.price }} $
+              </div>
+              <div class="min-h-20">
+                {{ product.content }}
+              </div>
+              <div
+                  v-if="product.can_change"
+                  class="d-flex flex-wrap justify-end align-center ga-3 mt-8"
               >
-                O'zgartirish
-              </VBtn>
-              <VBtn
-                  :loading="deleteLoading"
-                  size="small"
-                  color="red"
-                  prepend-icon="mdi-delete"
-                  @click.prevent="deleteProduct(product.id)"
-              >
-                O'chirish
-              </VBtn>
-            </div>
-          </VCardItem>
-        </VCard>
-      </VCol>
+                <VBtn
+                    size="small"
+                    tag="a"
+                    :to="{name: 'product.update', params: {id: product.id}}"
+                    color="warning"
+                    prepend-icon="$edit"
+                >
+                  O'zgartirish
+                </VBtn>
+                <VBtn
+                    :loading="productStore.pendingDeletionProductId === product.id"
+                    size="small"
+                    color="red"
+                    prepend-icon="mdi-delete"
+                    @click.prevent="deleteProduct(product.id)"
+                >
+                  O'chirish
+                </VBtn>
+              </div>
+            </VCardItem>
+          </VCard>
+        </VCol>
+      </template>
     </VRow>
   </div>
 </template>
+
+<style lang="scss">
+  .card-loader{
+    .v-skeleton-loader__image{
+      height: 100%;
+      min-height: 250px;
+    }
+  }
+</style>

@@ -3,9 +3,7 @@
 </script>
 
 <template>
-  <div>
-    {{ $route.params }}
-  </div>
+
 </template>
 
 <style scoped lang="scss">
