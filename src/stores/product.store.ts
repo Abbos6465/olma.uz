@@ -2,10 +2,13 @@ import {defineStore} from "pinia";
 import {ref} from "vue";
 import type {CategoryWidthBrandType, ProductsParams, ProductsType} from "@/types/product.type";
 import productApi from "@/api/product.api";
+import useToast from "@/components/ui/app-toast/useToast";
+
 
 export const useProductStore = defineStore("product", () => {
     const productsLoading = ref(false);
     const products = ref<ProductsType>({});
+    const {toast} = useToast();
 
     const fetchProducts = (params:ProductsParams = {}) => {
         productsLoading.value = true;

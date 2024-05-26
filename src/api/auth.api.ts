@@ -8,6 +8,10 @@ interface AuthResponse {
     user: User
 }
 
+interface LogoutType {
+    message: string
+}
+
 export default {
     async register(registerData: RegisterDataType): Promise<AuthResponse>{
         const {data} = await axios.post(`${prefix}/register`, registerData);
@@ -19,8 +23,9 @@ export default {
         return data;
     },
 
-    logout(){
-        return axios.get(`${prefix}/logout`);
+    async logout(): Promise<LogoutType>{
+        const {data} = await axios.get(`${prefix}/logout`);
+        return data;
     },
 
      async me(): Promise<User>{

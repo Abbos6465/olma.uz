@@ -19,13 +19,13 @@ const routes: RouteRecordRaw[] = [
                 component: () => import("@/pages/products/ProductsIndex.vue")
             },
             {
-                path: "/products/:id(\\d+)",
+                path: "/product/:id(\\d+)",
                 name: "product",
                 component: () => import("@/pages/products/ProductIdIndex.vue"),
                 children: [
                     {
                         path: "",
-                        name: "products.show",
+                        name: "product.show",
                         component: () => import("@/pages/products/productId/ProductShow.vue"),
                     },
                     {
@@ -34,6 +34,11 @@ const routes: RouteRecordRaw[] = [
                         component: () => import("@/pages/products/productId/ProductUpdate.vue"),
                     }
                 ]
+            },
+            {
+                path: "/product/create",
+                name: "product.create",
+                component: () => import("@/pages/products/productId/ProductCreate.vue")
             }
         ]
     },

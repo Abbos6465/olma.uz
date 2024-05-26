@@ -40,9 +40,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     const logout = ():void => {
         isLoading.value = true;
-        authApi.logout().then(() => {
+        authApi.logout().then(response => {
             clearUser();
-            toast.success({text: "Tizimdan muvaffaqqiyatli chiqildi"})
+            toast.success({text: response.message})
         }).finally(() => {
             isLoading.value = false;
         })
