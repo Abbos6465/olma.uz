@@ -1,43 +1,87 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {useProductStore} from "@/stores/product.store";
-import {useRouter}      from "vue-router";
 import {useAuthStore}   from "@/stores/auth.store";
+import {useProductStore} from "@/stores/product.store";
+import Navigation from "@/components/workplaces/Navigation.vue";
+import AppInput from "@/components/ui/AppInput.vue";
+import {ref, watch} from "vue";
+import {useRouter, useRoute} from "vue-router";
 
-const router = useRouter();
-const drawerOpen = ref<boolean>(false);
-const productStore = useProductStore();
+// Stores //
 const authStore = useAuthStore();
+const productStore = useProductStore();
+// Stores end //
 
+// Vue Router //
+const router = useRouter();
+const route = useRoute();
+// Vue Router End //
 
-onMounted(() => {
-  productStore.fetchCategoriesWithBrands();
-});
+const name = ref<string>("");
 
-const test = ref("");
+const searchProduct = () => {
+  const trimmedName = name.value.trim();
+  const routeQueryTrimName = route.query.name ? String(route.query.name).trim() : '';
+
+  if(trimmedName === routeQueryTrimName) return
+
+  const query = {};
+  if(name.value.length>0) query['name'] = name.value;
+
+  router.push({name: 'products', query: query})
+}
+
+watch(route, (newValue) => {
+  if(newValue.name === 'products' && newValue.query?.name && typeof newValue.query?.name === 'string') {
+    name.value = newValue.query.name;
+  }else {
+    name.value = "";
+  }
+}, {immediate: true});
+
 </script>
 
 <template>
-    <VAppBar color="primary" prominent>
-        <VAppBarNavIcon
-            size="large"
-            variant="text"
-            @click="drawerOpen = !drawerOpen"
-        />
-
+    <VAppBar
+        color="primary"
+       class="header px-5 d-flex align-center"
+    >
+        <Navigation/>
         <RouterLink
             :to="{ name: 'products' }"
             class="font-weight-bold text-decoration-none text-white"
         >
             Olma.uz
         </RouterLink>
-        <VSpacer></VSpacer>
-
+        <VSpacer class="px-5 d-flex align-center justify-center">
+          <AppInput
+              v-model="name"
+              class="w-50 d-flex align-center header__search-input"
+              placeholder="Qidirish"
+              density="comfortable"
+              type="search"
+              :append-click-function="searchProduct"
+              color="white"
+              rounded="xl"
+              append-icon="mdi-magnify"
+          />
+        </VSpacer>
         <template v-if="$vuetify.display.mdAndUp">
+          <VBtn
+              v-if="route.name !== 'product.create'"
+              rounded="xl"
+              :to="{name: 'product.create'}"
+              class="bg-green px-5 mr-5"
+          >
+            <VIcon
+                icon="mdi-plus"
+                start
+            />
+            Mahsulot qo'shish
+          </VBtn>
            <VChip
                size="large"
-               class="mr-5"
-               variant="outlined"
+               class="mr-5 px-5"
+               variant="text"
            >
              <VIcon
                  icon="mdi-account-outline"
@@ -46,10 +90,10 @@ const test = ref("");
             {{ authStore.user.username }}
           </VChip>
           <VBtn
-              variant="outlined"
               rounded="xl"
               :loading="authStore.isLoading"
               @click="authStore.logout"
+              class="bg-red text-capitalize"
           >
             <VIcon
                 icon="mdi-logout"
@@ -59,41 +103,20 @@ const test = ref("");
           </VBtn>
         </template>
     </VAppBar>
-    <VNavigationDrawer
-        v-model="drawerOpen"
-        :location="$vuetify.display.mobile ? 'bottom' : undefined"
-        temporary
-        width="300"
-        expand-on-hover
-    >
-        <VList
-            v-model="test"
-            nav
-            variant="text"
-        >
-            <VListGroup
-                v-for="category in productStore.categoriesWidthBrands"
-                :key="`category-${category.id}`"
-            >
-                <template #activator>
-                    <VListItem :value="`category-${category.id}`">
-                        <VListItemTitle>
-                            {{ category.name }}
-                        </VListItemTitle>
-                    </VListItem>
-                </template>
-                <VListItem
-                    v-for="brand in category.brands"
-                    :key="`brand-${brand.id}`"
-                    :value="`brand-${brand.id}`"
-                    :to="{
-                        name: 'products',
-                        query: { category_id: category.id, brand_id: brand.id },
-                    }"
-                >
-                    {{ brand.name }}
-                </VListItem>
-            </VListGroup>
-        </VList>
-    </VNavigationDrawer>
+
 </template>
+
+<style lang="scss">
+  .header{
+
+    &__search-input{
+      .v-field{
+        height: 45px;
+      }
+
+      .v-input__details{
+        display: none !important;
+      }
+    }
+  }
+</style>

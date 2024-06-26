@@ -43,7 +43,8 @@ export interface ProductsType {
 export interface ProductsParams{
     page?: number,
     category_id?: number,
-    brand_id?: number
+    brand_id?: number,
+    name?: string
 }
 
 export interface CategoryWidthBrandType extends CategoryType{

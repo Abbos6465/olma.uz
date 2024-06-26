@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import type {CategoryWidthBrandType, ProductsParams, ProductsType} from "@/types/product.type";
 import productApi from "@/api/product.api";
 import useToast from "@/components/ui/app-toast/useToast";
@@ -8,6 +8,9 @@ import useToast from "@/components/ui/app-toast/useToast";
 export const useProductStore = defineStore("product", () => {
     const productsLoading = ref(false);
     const products = ref<ProductsType>({});
+    const hasProductsData = computed<boolean>(() => {
+        return products.value?.data?.length > 0;
+    });
     const {toast} = useToast();
 
     const fetchProducts = (params:ProductsParams = {}) => {
@@ -48,6 +51,7 @@ export const useProductStore = defineStore("product", () => {
     return {
         productsLoading,
         products,
+        hasProductsData,
         fetchProducts,
         pendingDeletionProductId,
         deleteProduct,

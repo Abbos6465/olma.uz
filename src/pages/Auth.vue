@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
-import {onMounted, type Ref, ref} from "vue";
+import {onMounted, type Ref, ref, watch} from "vue";
 import AppInput, {type hintType} from "@/components/ui/AppInput.vue";
 import type {LoginDataType, RegisterDataType} from "@/types";
 import AppForm, {type ValidationType} from "@/components/ui/AppForm.vue";
@@ -27,6 +27,7 @@ const authHandler = async () => {
   authStore.auth(route.name, form.value).then(() => {
     toast.success({text: "Tizimga muvaffaqqiyatli kirildi"});
     router.push({name: "products"});
+    clear();
   }).catch((error:any) => {
     const errorData = error?.data ?? {}
     switch (error?.status){
@@ -43,6 +44,15 @@ const setErrorHint = (hint?:string):hintType => {
     text: hint
   }
 }
+
+const clear = () => {
+  validation.value?.clearForm();
+  validation.value?.clearValidate();
+}
+
+watch(route, () => {
+  clear();
+});
 
 onMounted(() => {
   if(getAccessToken()) authStore.clearUser();

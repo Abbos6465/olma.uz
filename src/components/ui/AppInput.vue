@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {generateRandomID} from "@/utils/helper";
-import {computed, ref, type Ref, useSlots, watch} from "vue";
+import {computed, ref, type Ref, useSlots} from "vue";
 import {vMaska} from "maska";
 
 type ValueType = string | number;
@@ -15,15 +15,19 @@ interface Props {
   required?: boolean,
   mask?: string,
   label?:string,
+  color?: string,
   placeholder?: string,
   disabled?:boolean,
   readonly?:boolean,
   value?: ValueType,
   density?: 'compact' | 'comfortable',
   icon?: string,
+  appendIcon?: string,
   suffix?: string,
   hint?: {} | hintType,
-  min?: number
+  min?: number,
+  rounded?: string,
+  appendClickFunction?: Function
 }
 
 const model = defineModel<ValueType>();
@@ -31,6 +35,7 @@ const model = defineModel<ValueType>();
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
   density: 'compact',
+  color: 'primary'
 });
 
 const randomId:string = generateRandomID();
@@ -48,12 +53,12 @@ const computedType = computed(() => {
 });
 
 const appendInnerClick = () => {
-  if(props.type !== 'password') return
+  if(props.type !== 'password' && props.appendClickFunction) return props.appendClickFunction();
   showPassword.value = !showPassword.value;
 }
 
-const appendIcon = computed<string>(() => {
-  if(props.type !== 'password') return ''
+const computedAppendIcon = computed<string>(() => {
+  if(props.type !== 'password' && props.appendIcon) return props.appendIcon;
   return showPassword.value ? 'mdi-eye-off' : 'mdi-eye'
 });
 
@@ -61,7 +66,7 @@ const computedRules = computed(() => {
   const rules:any = [];
   if(props.required){
     rules.push(
-     v => (props.type === 'text' ? !!v.trim() : !!v) || "To'ldirish majburiy maydon"
+     v => (props.type === 'text' ? !!v?.trim() : !!v) || "To'ldirish majburiy maydon"
     )
   }
   if(props.type === 'email'){
@@ -81,7 +86,11 @@ const computedRules = computed(() => {
 
 const checkEmail = (value?:string): boolean => {
   const regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(value.trim());
+  return regex.test(value?.trim());
+}
+
+const keyupEnterEvent = () => {
+  if(props.appendClickFunction) appendInnerClick();
 }
 
 </script>
@@ -116,11 +125,13 @@ const checkEmail = (value?:string): boolean => {
       :required="required"
       variant="outlined"
       :density="density"
+      :rounded="rounded"
       :type="computedType"
-      color="primary"
+      :color="color"
       :prepend-inner-icon="icon"
-      :append-inner-icon="appendIcon"
+      :append-inner-icon="computedAppendIcon"
       @click:append-inner="appendInnerClick"
+      @keyup.enter="keyupEnterEvent"
       :rules="computedRules"
       :hint="hint?.text"
       persistent-hint
