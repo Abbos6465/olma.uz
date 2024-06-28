@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <div class="app-form">
-
-  </div>
+  <h1>
+    Error
+  </h1>
 </template>
 
 <style scoped lang="scss">

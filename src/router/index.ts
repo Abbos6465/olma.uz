@@ -8,6 +8,10 @@ const router: Router = createRouter({
   routes
 });
 
+router.onError((error: Error) => {
+  
+})
+
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   middleware(to, from, next);
 });

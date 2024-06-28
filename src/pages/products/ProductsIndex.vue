@@ -2,22 +2,24 @@
 import {ref, watch} from "vue";
 import {useProductStore} from "@/stores/product.store";
 import {useRoute, useRouter} from "vue-router";
-import {passingQueryNumber} from "@/utils/helper";
+import {numFormat, passingQueryNumber} from "@/utils/helper";
 import AppPagination from "@/components/ui/AppPagination.vue";
+import type {ProductsParams} from "@/types/product.type";
 
 const route = useRoute();
 const router = useRouter();
 const productStore = useProductStore();
 
 const deleteProduct = async (id:number) => {
-  await productStore.deleteProduct(id);
-  fetchProducts();
+  await productStore.deleteProduct(id).then(() => {
+    fetchProducts();
+  })
 }
 
 const page = ref<number>(1);
 
 const fetchProducts = () => {
-  const params = {};
+  const params: ProductsParams = {};
   page.value = passingQueryNumber(route.query?.page);
   const category_id = passingQueryNumber(route.query?.category_id);
   const brand_id = passingQueryNumber(route.query?.brand_id);
@@ -30,16 +32,11 @@ const fetchProducts = () => {
   productStore.fetchProducts(params);
 }
 
-watch(route, () => {
-  fetchProducts();
-}, {immediate: true});
+watch(route, () => fetchProducts(), {immediate: true});
 
 watch(page, (newValue) => {
-  if(newValue){
-    router.push({query: {page: newValue}});
-  }
+  if (newValue) router.push({query: {page: newValue}});
 });
-
 
 </script>
 
@@ -74,22 +71,22 @@ watch(page, (newValue) => {
               >
                 <VImg
                     height="250"
-                    src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+                    :src="productStore.product.photo?.length>0 ? productStore.product.photo :  'https://cdn.vuetifyjs.com/images/cards/cooking.png'"
                     cover
                 />
                 <VCardItem>
-                  <VCardTitle>
+                  <VCardTitle class="text-wrap">
                     {{ product.title }}
                   </VCardTitle>
-                  <VCardSubtitle>
-                    {{ `${product.brand.name}(${product.category.name})` }}
+                  <VCardSubtitle class="text-wrap">
+                    {{ `${product?.brand?.name}(${product?.category?.name})` }}
                   </VCardSubtitle>
                   <div class="mt-4 font-weight-bold text-2xl text-blue">
-                    {{ product.price }} $
+                    {{ numFormat(product.price) }} $
                   </div>
-                  <div class="min-h-20">
+                  <VCardText class="min-h-20 px-0 py-2 products-card__text">
                     {{ product.content }}
-                  </div>
+                  </VCardText>
                   <div
                       v-if="product.can_change"
                       class="d-flex flex-wrap justify-end align-center ga-3 mt-8"
@@ -148,5 +145,9 @@ watch(page, (newValue) => {
       height: 100%;
       min-height: 250px;
     }
+  }
+
+  .products-card__text {
+    @include clamp-text(4, 90px);
   }
 </style>

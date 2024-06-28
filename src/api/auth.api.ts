@@ -5,6 +5,7 @@ const prefix: "/auth" = "/auth";
 
 interface AuthResponse {
     access_token: string,
+    'expires_in': number,
     user: User
 }
 
@@ -30,6 +31,11 @@ export default {
 
      async me(): Promise<User>{
         const {data} = await axios.get(`${prefix}/me`);
+        return data;
+    },
+
+    async refresh(): Promise<AuthResponse>{
+        const {data} = await axios.post(`${prefix}/refresh`);
         return data;
     }
 }

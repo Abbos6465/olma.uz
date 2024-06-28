@@ -1,4 +1,7 @@
 import type {RouteRecordRaw} from "vue-router";
+import * as path from "node:path";
+
+const notFoundPrefix:':catchAll(.*)' = ":catchAll(.*)"
 
 const routes: RouteRecordRaw[] = [
     {
@@ -15,31 +18,34 @@ const routes: RouteRecordRaw[] = [
             {
                 path: "/products",
                 name: "products",
-                alias: "/",
+                alias: ["/", "/product"],
                 component: () => import("@/pages/products/ProductsIndex.vue")
             },
             {
-                path: "/product/:id(\\d+)",
-                name: "product",
-                component: () => import("@/pages/products/productId/ProductIdIndex.vue"),
+                path: "/product",
                 children: [
                     {
-                        path: "",
-                        name: "product.show",
-                        component: () => import("@/pages/products/productId/ProductShow.vue"),
+                        path: ":id(\\d+)",
+                        children: [
+                            {
+                                path: "",
+                                name: "product.show",
+                                component: () => import("@/pages/products/productId/ProductShow.vue"),
+                            },
+                            {
+                                path: "update",
+                                name: "product.update",
+                                component: () => import("@/pages/products/productId/ProductUpdate.vue"),
+                            }
+                        ]
                     },
                     {
-                        path: "update",
-                        name: "product.update",
-                        component: () => import("@/pages/products/productId/ProductUpdate.vue"),
+                        path: "create",
+                        name: "product.create",
+                        component: () => import("@/pages/products/ProductCreate.vue")
                     }
                 ]
             },
-            {
-                path: "/product/create",
-                name: "product.create",
-                component: () => import("@/pages/products/productId/ProductCreate.vue")
-            }
         ]
     },
     {
@@ -59,12 +65,17 @@ const routes: RouteRecordRaw[] = [
                 name: "register",
                 component: () => import("@/pages/Auth.vue")
             },
+            {
+                path: `/${notFoundPrefix}`,
+                name: "login.layout.notfound",
+                component: () => import("@/pages/404.vue"),
+            }
         ]
     },
     {
-        path: "/test",
-        name: "test",
-        component: () => import("@/pages/Test.vue")
+        path: `/${notFoundPrefix}`,
+        name: "notfound",
+        component: () => import("@/pages/404.vue"),
     }
 ];
 

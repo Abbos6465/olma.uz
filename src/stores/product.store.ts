@@ -1,15 +1,22 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
-import type {CategoryWidthBrandType, ProductsParams, ProductsType} from "@/types/product.type";
+import type {
+    CategoryType,
+    CategoryWidthBrandType,
+    ProductsParams,
+    ProductsType,
+    ProductType
+} from "@/types/product.type";
 import productApi from "@/api/product.api";
 import useToast from "@/components/ui/app-toast/useToast";
 
 
 export const useProductStore = defineStore("product", () => {
-    const productsLoading = ref(false);
-    const products = ref<ProductsType>({});
+    const productsLoading = ref<boolean>(false);
+    const products = ref<ProductsType | {}>({});
     const hasProductsData = computed<boolean>(() => {
-        return products.value?.data?.length > 0;
+        if(!Object.keys(products.value).length) return false;
+        return products.value.data?.length > 0;
     });
     const {toast} = useToast();
 
@@ -27,9 +34,10 @@ export const useProductStore = defineStore("product", () => {
     }
 
     const pendingDeletionProductId = ref<number | null>(null);
-    const deleteProduct = (id:number) => {
+
+    const deleteProduct = async (id:number)  => {
         pendingDeletionProductId.value = id;
-        productApi.deleteProduct(id).then(response => {
+        return await productApi.deleteProduct(id).then(response => {
             toast.success({text: response});
         }).finally(() => {
             pendingDeletionProductId.value = null;
@@ -48,6 +56,22 @@ export const useProductStore = defineStore("product", () => {
         });
     }
 
+    const product = ref<ProductType | {}>({});
+    const productLoading = ref<boolean>(false);
+
+    const fetchProduct = (id: number) => {
+        productLoading.value = true;
+        productApi.fetchProduct(id).then(response => {
+            product.value = response;
+        }).finally(() => {
+            productLoading.value = false;
+        })
+    }
+
+    const categories = ref<CategoryType[]>([]);
+    const categoriesLoading = ref(false);
+    // const hasCate
+
     return {
         productsLoading,
         products,
@@ -57,6 +81,9 @@ export const useProductStore = defineStore("product", () => {
         deleteProduct,
         categoriesWidthBrands,
         categoriesWidthBrandsLoading,
-        fetchCategoriesWithBrands
+        fetchCategoriesWithBrands,
+        product,
+        productLoading,
+        fetchProduct
     }
 });

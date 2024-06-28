@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
-import {onMounted, type Ref, ref, watch} from "vue";
-import AppInput, {type hintType} from "@/components/ui/AppInput.vue";
-import type {LoginDataType, RegisterDataType} from "@/types";
-import AppForm, {type ValidationType} from "@/components/ui/AppForm.vue";
+import {onMounted, ref, watch} from "vue";
+import AppInput from "@/components/ui/forms/AppInput.vue";
+import type {FormItemHintType} from "@/components/ui/forms/form.types";
+import type {LoginDataType, RegisterDataType} from "@/types/auth.type";
+import AppForm, {type ValidationType} from "@/components/ui/forms/AppForm.vue";
 import {getAccessToken} from "@/utils/local.storage";
 import useToast from "@/components/ui/app-toast/useToast";
 
@@ -13,21 +14,22 @@ const router = useRouter();
 const authStore = useAuthStore();
 const {toast} = useToast();
 
-const form: Ref<LoginDataType | RegisterDataType> = ref({
+const form = ref<LoginDataType | RegisterDataType>({
   username: '',
   email: '',
   password: ''
 });
 
 const validation = ref<ValidationType>({});
-const validationErrors = ref<LoginDataType | RegisterDataType>({})
+const validationErrors = ref<LoginDataType | RegisterDataType | {}>({})
 
 const authHandler = async () => {
   if(!(await validation.value?.validate())) return
   authStore.auth(route.name, form.value).then(() => {
     toast.success({text: "Tizimga muvaffaqqiyatli kirildi"});
-    router.push({name: "products"});
-    clear();
+    router.push({name: "products"}).then(() => {
+      clear();
+    });
   }).catch((error:any) => {
     const errorData = error?.data ?? {}
     switch (error?.status){
@@ -37,8 +39,8 @@ const authHandler = async () => {
   });
 }
 
-const setErrorHint = (hint?:string):hintType => {
-  if(!hint) return
+const setErrorHint = (hint?:string):FormItemHintType => {
+  if(!hint) return {}
   return {
     status: 'danger',
     text: hint

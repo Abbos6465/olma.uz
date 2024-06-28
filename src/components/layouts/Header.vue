@@ -2,9 +2,10 @@
 import {useAuthStore}   from "@/stores/auth.store";
 import {useProductStore} from "@/stores/product.store";
 import Navigation from "@/components/workplaces/Navigation.vue";
-import AppInput from "@/components/ui/AppInput.vue";
+import AppInput from "@/components/ui/forms/AppInput.vue";
 import {ref, watch} from "vue";
 import {useRouter, useRoute} from "vue-router";
+import type {ProductsParams} from "@/types/product.type";
 
 // Stores //
 const authStore = useAuthStore();
@@ -24,7 +25,8 @@ const searchProduct = () => {
 
   if(trimmedName === routeQueryTrimName) return
 
-  const query = {};
+  const query:ProductsParams  = {};
+
   if(name.value.length>0) query['name'] = name.value;
 
   router.push({name: 'products', query: query})
@@ -33,9 +35,7 @@ const searchProduct = () => {
 watch(route, (newValue) => {
   if(newValue.name === 'products' && newValue.query?.name && typeof newValue.query?.name === 'string') {
     name.value = newValue.query.name;
-  }else {
-    name.value = "";
-  }
+  }else name.value = "";
 }, {immediate: true});
 
 </script>

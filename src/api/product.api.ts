@@ -1,17 +1,25 @@
 import axios from "@/utils/axios";
-import type {CategoryWidthBrandType, ProductDataType, ProductsParams, ProductsType} from "@/types/product.type";
+import type {
+    BrandType,
+    CategoryType,
+    CategoryWidthBrandType,
+    ProductDataType,
+    ProductsParams,
+    ProductsType
+} from "@/types/product.type";
 import {useAuthStore} from "@/stores/auth.store";
 
 const authStore = useAuthStore();
-const prefix = '/products';
+const prefix:'/products' = '/products';
 
 export default {
     fetchProducts(params:ProductsParams = {}):Promise<ProductsType>{
         return axios.get(prefix, {params});
     },
 
-    fetchProduct(id:number){
-        return axios.get(`${prefix}/${id}`);
+    async fetchProduct(id:number){
+        const  {data} = await axios.get(`${prefix}/${id}`);
+        return data;
     },
 
     createProduct(data: ProductDataType){
@@ -26,7 +34,18 @@ export default {
         return axios.delete(`${prefix}/${id}`);
     },
 
-    fetchCategoriesWithBrands():Promise<CategoryWidthBrandType[]>{
-        return axios.get(`/categories-width-brands`);
+    async fetchCategoriesWithBrands():Promise<CategoryWidthBrandType[]>{
+        const {data} = await axios.get(`/categories-width-brands`);
+        return data;
+    },
+
+    async fetchCategories(): Promise<CategoryType[]>{
+        const {data} = await axios.get(`categories`);
+        return data;
+    },
+
+    async fetchBrands(categoryId:number): Promise<BrandType[]>{
+        const {data} = await axios.get(`brands/${categoryId}`);
+        return data;
     }
 }

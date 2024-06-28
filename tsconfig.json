@@ -1,12 +1,21 @@
 {
-  "files": [],
+  "include": [
+    "./env.d.ts",
+    "./src/**/*",
+    "./src/**/*.vue"
+  ],
+  "compilerOptions": {
+    "importsNotUsedAsValues": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
   "references": [
     {
       "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
     }
-  ],
-  "include": ["env.d.ts", "src/**/*"]
+  ]
 }

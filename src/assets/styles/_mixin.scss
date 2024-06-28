@@ -1,1 +1,1 @@
-@mixin font-size($size){  font-size: calc($size/16) + rem;}
+@mixin font-size($size){  font-size: calc($size/16) + rem;}@mixin clamp-text($clamp-size, $max-height: 'max-content'){  display: -webkit-box;  -webkit-line-clamp: $clamp-size;  max-height: $max-height;  -webkit-box-orient: vertical;  overflow: hidden;  text-overflow: ellipsis;}

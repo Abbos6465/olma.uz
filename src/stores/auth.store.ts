@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 import type {Ref} from "vue";
 import {ref} from "vue";
 import type {LoginDataType, RegisterDataType, User} from "@/types/auth.type";
-import {setAccessToken, removeAccessToken, getAccessToken} from "@/utils/local.storage";
+import {setAccessToken, removeAccessToken, setItem, getItem, removeItem} from "@/utils/local.storage";
 import authApi from "@/api/auth.api";
 import {useRouter} from "vue-router";
 import useToast from "@/components/ui/app-toast/useToast";
@@ -21,6 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
             const response = await (type === 'login' ? authApi.login(data) : authApi.register(data));
             isAuth.value = true;
             setAccessToken(response.access_token);
+            setTokenExpiration(response.expires_in);
             user.value = response.user;
         }finally{
             isLoading.value = false;
@@ -28,7 +29,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const me = (): void => {
-        if(!getAccessToken()) return
         isAuth.value = true;
         isLoading.value = true;
         authApi.me().then(response => {
@@ -52,7 +52,41 @@ export const useAuthStore = defineStore('auth', () => {
         isAuth.value = false;
         user.value = {};
         removeAccessToken();
+        removeItem(tokenExpirationTimeKey);
         router.replace({path: "/login"});
+    }
+
+    const refresh = async ():Promise<void> => {
+        if (isLoading.value) return Promise.resolve();
+        isAuth.value = true;
+        console.log("AA")
+        isLoading.value = true;
+        return await authApi.refresh().then(response => {
+            setAccessToken(response.access_token);
+            setTokenExpiration(response.expires_in);
+            user.value = response.user;
+        }).finally(() => {
+            isLoading.value = false;
+        });
+    }
+
+    const tokenExpirationTimeKey: 'token_expiration_time' = 'token_expiration_time'
+
+    const setTokenExpiration = (time: number): number => {
+        const newExpirationTime:number = new Date().getTime() + time;
+        setItem(tokenExpirationTimeKey, newExpirationTime);
+    }
+
+    const isTokenExpired = ():boolean => {
+        const expirationTime:number = +getItem(tokenExpirationTimeKey);
+
+        if(!expirationTime) return false;
+
+        const currentTime:number = new Date().getTime();
+
+        const betweenTime:number = expirationTime - currentTime;
+
+        return betweenTime < 60000;
     }
 
     return {
@@ -62,6 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
         clearUser,
         auth,
         logout,
-        me
+        me,
+        refresh,
+        isTokenExpired,
     }
 })

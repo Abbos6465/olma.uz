@@ -4,6 +4,7 @@ import {useAuthStore} from "@/stores/auth.store";
 import {getAccessToken} from "@/utils/local.storage";
 import useToast from "@/components/ui/app-toast/useToast";
 import {generateRandomID} from "@/utils/helper";
+import authApi from "@/api/auth.api";
 
 const id = generateRandomID();
 
@@ -15,7 +16,9 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(
-    (config:InternalAxiosRequestConfig<any>) => {
+     async (config:InternalAxiosRequestConfig<any>) => {
+         const authStore = useAuthStore();
+         if (authStore.isTokenExpired()) await authStore.refresh();
 
         const accessToken: string | null = getAccessToken();
         if (accessToken != null) config.headers['Authorization'] = 'Bearer ' + accessToken;

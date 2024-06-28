@@ -7,13 +7,13 @@ export interface ProductDataType {
     photo: File
 }
 
-interface BrandType {
+export interface BrandType {
     id: number,
     category_id: number,
     name: string
 }
 
-interface CategoryType {
+export interface CategoryType {
     id: number,
     name: string
 }

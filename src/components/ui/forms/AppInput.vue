@@ -2,40 +2,26 @@
 import {generateRandomID} from "@/utils/helper";
 import {computed, ref, type Ref, useSlots} from "vue";
 import {vMaska} from "maska";
+import type {FormItemType, FormRulesType, FormRulesVType} from "@/components/ui/forms/form.types";
 
 type ValueType = string | number;
 
-export interface hintType {
-  text?: string,
-  status?: 'danger' | ''
-}
-
-interface Props {
+interface PropsType extends FormItemType {
   type?: string,
-  required?: boolean,
   mask?: string,
-  label?:string,
-  color?: string,
-  placeholder?: string,
-  disabled?:boolean,
-  readonly?:boolean,
   value?: ValueType,
-  density?: 'compact' | 'comfortable',
   icon?: string,
   appendIcon?: string,
-  suffix?: string,
-  hint?: {} | hintType,
   min?: number,
-  rounded?: string,
   appendClickFunction?: Function
 }
 
 const model = defineModel<ValueType>();
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PropsType>(), {
   type: 'text',
   density: 'compact',
-  color: 'primary'
+  color: 'primary',
 });
 
 const randomId:string = generateRandomID();
@@ -62,29 +48,33 @@ const computedAppendIcon = computed<string>(() => {
   return showPassword.value ? 'mdi-eye-off' : 'mdi-eye'
 });
 
-const computedRules = computed(() => {
-  const rules:any = [];
+const computedRules = computed<FormRulesType>(() => {
+  const rules:FormRulesType = [];
   if(props.required){
     rules.push(
-     v => (props.type === 'text' ? !!v?.trim() : !!v) || "To'ldirish majburiy maydon"
+        (v: FormRulesVType) => (props.type === 'text' && typeof (v) === 'string') ? !!v?.trim() : !!v || "To'ldirish majburiy maydon"
     )
   }
   if(props.type === 'email'){
     rules.push(
-        v => checkEmail(v) || "Noto'g'ri elektron pochta manzili"
+        (v: FormRulesVType) =>  checkEmail(v) || "Noto'g'ri elektron pochta manzili"
     )
   }
 
-  if(!!props.min){
+  if (!!props.min){
     rules.push(
-        v => !(typeof(v) === 'string' && v.length<props.min) || `Maydon kamida ${props.min} ta belgidan iborat bo'lishi kerak`
-    )
+        (v: FormRulesVType) => {
+          if (typeof v === 'string') return v.length >= props.min || `Maydon kamida ${props.min} ta belgidan iborat bo'lishi kerak`;
+          else return v >= props.min || `Son kamida ${props.min} shu songa teng bo'lishi kerak`;
+        }
+    );
   }
 
   return rules;
 });
 
-const checkEmail = (value?:string): boolean => {
+const checkEmail = (value?: FormRulesVType): boolean => {
+  if (!value || (value && typeof(value) === 'string')) return false;
   const regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(value?.trim());
 }
@@ -109,9 +99,7 @@ const keyupEnterEvent = () => {
       <template v-if="label">
         {{ label }}
       </template>
-      <span
-        v-if="required"
-      >
+      <span v-if="required">
         *
       </span>
     </label>
@@ -134,8 +122,9 @@ const keyupEnterEvent = () => {
       @keyup.enter="keyupEnterEvent"
       :rules="computedRules"
       :hint="hint?.text"
-      persistent-hint
+      :persistent-hint="!!hint"
       :error="hint?.status === 'danger'"
+      :clearable="clearable"
       class="app-input__input"
     >
     </VTextField>

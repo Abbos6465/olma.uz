@@ -2,11 +2,12 @@
   import {onMounted} from "vue";
   import {useAuthStore} from "@/stores/auth.store";
   import AppToast from "@/components/ui/app-toast/AppToast.vue";
+  import {getAccessToken} from "@/utils/local.storage";
 
   const authStore = useAuthStore();
 
   onMounted(() => {
-    authStore.me();
+    if (getAccessToken()) authStore.me();
   });
 </script>
 
