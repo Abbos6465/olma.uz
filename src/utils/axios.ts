@@ -28,7 +28,7 @@ axiosInstance.interceptors.request.use(
 
     (error) => {
         if (error.response?.status === 401) {
-            toast.error({text: response.statusText});
+            toast.error({text: error.response.statusText});
             useAuthStore().clearUser();
         }
 

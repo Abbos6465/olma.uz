@@ -9,16 +9,25 @@ import type {
 } from "@/types/product.type";
 import productApi from "@/api/product.api";
 import useToast from "@/components/ui/app-toast/useToast";
+import useError from "@/components/ui/app-error/useError";
+
 
 
 export const useProductStore = defineStore("product", () => {
-    const productsLoading = ref<boolean>(false);
-    const products = ref<ProductsType | {}>({});
-    const hasProductsData = computed<boolean>(() => {
-        if(!Object.keys(products.value).length) return false;
-        return products.value.data?.length > 0;
-    });
+    const {setNotFoundError, setServerError} = useError();
     const {toast} = useToast();
+
+    const productsLoading = ref<boolean>(false);
+    const products = ref<ProductsType>({
+        data: [],
+        meta: {
+            current_page: 0,
+            last_page: 0,
+        }
+    });
+    const hasProductsData = computed<boolean>(() => {
+        if (Object.keys(products.value).length > 0) return products.value?.data?.length > 0;
+    });
 
     const fetchProducts = (params:ProductsParams = {}) => {
         productsLoading.value = true;
@@ -28,6 +37,9 @@ export const useProductStore = defineStore("product", () => {
                 current_page: response.meta.current_page,
                 last_page: response.meta.last_page
             }
+        }).catch(error => {
+            if (error.status === 404) setNotFoundError();
+            else setServerError(error);
         }).finally(() => {
             productsLoading.value = false;
         });
@@ -56,13 +68,19 @@ export const useProductStore = defineStore("product", () => {
         });
     }
 
-    const product = ref<ProductType | {}>({});
+    const product = ref<ProductType>({});
     const productLoading = ref<boolean>(false);
+    const hasProduct = computed<boolean>(() => {
+        return Object.keys(product.value).length > 0;
+    })
 
-    const fetchProduct = (id: number) => {
+    const fetchProduct = async (id: number):Promise<void> => {
         productLoading.value = true;
-        productApi.fetchProduct(id).then(response => {
+        await productApi.fetchProduct(id).then(response => {
             product.value = response;
+        }).catch(error => {
+            if (error.status === 404) setNotFoundError();
+            else setServerError(error);
         }).finally(() => {
             productLoading.value = false;
         })
@@ -83,6 +101,7 @@ export const useProductStore = defineStore("product", () => {
         categoriesWidthBrandsLoading,
         fetchCategoriesWithBrands,
         product,
+        hasProduct,
         productLoading,
         fetchProduct
     }

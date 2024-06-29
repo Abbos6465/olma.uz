@@ -59,7 +59,6 @@ export const useAuthStore = defineStore('auth', () => {
     const refresh = async ():Promise<void> => {
         if (isLoading.value) return Promise.resolve();
         isAuth.value = true;
-        console.log("AA")
         isLoading.value = true;
         return await authApi.refresh().then(response => {
             setAccessToken(response.access_token);

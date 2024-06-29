@@ -13,7 +13,7 @@ const authStore = useAuthStore();
 const prefix:'/products' = '/products';
 
 export default {
-    fetchProducts(params:ProductsParams = {}):Promise<ProductsType>{
+     fetchProducts(params:ProductsParams = {}):Promise<ProductsType>{
         return axios.get(prefix, {params});
     },
 

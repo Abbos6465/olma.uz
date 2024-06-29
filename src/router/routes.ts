@@ -1,7 +1,4 @@
 import type {RouteRecordRaw} from "vue-router";
-import * as path from "node:path";
-
-const notFoundPrefix:':catchAll(.*)' = ":catchAll(.*)"
 
 const routes: RouteRecordRaw[] = [
     {
@@ -50,7 +47,7 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: "/auth",
-        name: "login.layout",
+        name: "auth",
         component: () => import("@/layouts/AuthLayout.vue"),
         redirect: {name: 'login'},
         children: [
@@ -64,16 +61,11 @@ const routes: RouteRecordRaw[] = [
                 path: "/register",
                 name: "register",
                 component: () => import("@/pages/Auth.vue")
-            },
-            {
-                path: `/${notFoundPrefix}`,
-                name: "login.layout.notfound",
-                component: () => import("@/pages/404.vue"),
             }
         ]
     },
     {
-        path: `/${notFoundPrefix}`,
+        path: `/:catchAll(.*)`,
         name: "notfound",
         component: () => import("@/pages/404.vue"),
     }

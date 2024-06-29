@@ -29,7 +29,7 @@ const fetchProducts = () => {
   if(brand_id) params['brand_id'] = brand_id;
   if(name) params['name'] = name;
 
-  productStore.fetchProducts(params);
+    productStore.fetchProducts(params);
 }
 
 watch(route, () => fetchProducts(), {immediate: true});

@@ -9,7 +9,7 @@ const router: Router = createRouter({
 });
 
 router.onError((error: Error) => {
-  
+
 })
 
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {

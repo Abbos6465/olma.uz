@@ -18,7 +18,7 @@ export interface CategoryType {
     name: string
 }
 
-export interface ProductType {
+export type ProductType = {
     id: number,
     photo?: string,
     brand: BrandType,
@@ -28,7 +28,7 @@ export interface ProductType {
     title: string,
     user_id: number,
     can_change: boolean
-}
+} | {};
 
 interface MetaType {
     current_page: number,

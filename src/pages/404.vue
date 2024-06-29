@@ -1,19 +1,15 @@
 <script setup lang="ts">
+import {onMounted} from "vue";
+import useError from "@/components/ui/app-error/useError";
+
+const {setNotFoundError} = useError();
+
+onMounted(() => {
+  setNotFoundError();
+});
+
 </script>
 
 <template>
-  <section class="notfound-section py-10 pt-15">
-    <div class="container notfound">
-      <v-empty-state
-          headline="Voy, 404"
-          title="Sahifa topilmadi"
-          text="Siz qidirayotgan sahifa mavjud emas"
-          image="https://vuetifyjs.b-cdn.net/docs/images/logos/v.png"
-      ></v-empty-state>
-    </div>
-  </section>
+ ssss
 </template>
-
-<style scoped lang="scss">
-
-</style>

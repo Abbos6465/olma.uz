@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {computed, watch} from "vue";
 import {numFormat, passingQueryNumber} from "@/utils/helper";
 import {useProductStore} from "@/stores/product.store";
 import Breadcrumbs, {type BreadcrumbsItemType} from "@/components/ui/Breadcrumbs.vue";
 import AppProgressCircular from "@/components/ui/AppProgressCircular.vue";
+
 
 // Stores //
 const productStore = useProductStore();
@@ -12,19 +13,24 @@ const productStore = useProductStore();
 
 // Vue Router //
 const route = useRoute();
+const router = useRouter();
 // Vue Router end //
 
-watch(() => route.params.id, (id) => {
+watch(() => route.params.id, (id:string) => {
   const numberTypeId: number | null = passingQueryNumber(id);
-  if (numberTypeId) productStore.fetchProduct(numberTypeId);
+  if (numberTypeId) {
+    productStore.fetchProduct(numberTypeId);
+  }
 }, {immediate: true});
 
 
 const breadcrumbsItems = computed<BreadcrumbsItemType[]>(() => {
-  if(productStore.productLoading) return [];
+
+  if(productStore.productLoading || (!productStore.productLoading && !productStore.hasProduct)) return [];
+
   return [
     {
-      title: productStore.product.category.name,
+      title: productStore.product?.category.name,
       href: {name: 'products', query: {category: productStore.product.category.id}}
     },
     {
@@ -32,7 +38,7 @@ const breadcrumbsItems = computed<BreadcrumbsItemType[]>(() => {
       href: {name: 'products', query: {category_id: productStore.product.category.id, brand_id: productStore.product.brand.id}}
     },
     {
-      title: productStore.product.title,
+      title: productStore.product?.title,
       disabled: true
     }
   ]
@@ -47,7 +53,7 @@ const breadcrumbsItems = computed<BreadcrumbsItemType[]>(() => {
         class="mt-15 product-show__app-progress-circular"
         :size="90"
     />
-    <template v-else>
+    <template v-else-if="productStore.hasProduct && !productStore.productLoading">
       <Breadcrumbs
           :items="breadcrumbsItems"
           class="pb-10"

@@ -64,10 +64,9 @@ export default () => {
         const itemCollections = document.querySelectorAll('.app-toast__item');
         const foundedItem = Array.from(itemCollections).find((el: HTMLElement) => el.id === id);
 
-
-
-        if (foundedItem?.attributes?.isHovered && +foundedItem?.attributes?.isHovered.value) {
-            return deleteFunction(id);
+        if (foundedItem) {
+            const isHovered = foundedItem.getAttribute('isHovered');
+            if (isHovered && +isHovered) return deleteFunction(id);
         }
 
         const index: number = findIndex(items, 'id', id);
