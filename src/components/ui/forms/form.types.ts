@@ -17,6 +17,6 @@ export interface FormItemType {
     clearable?: boolean
 }
 
-export type FormRulesVType = undefined | string | number
+export type FormRulesVType = any
 
 export type FormRulesType = ((v: FormRulesVType) => boolean | string)[];

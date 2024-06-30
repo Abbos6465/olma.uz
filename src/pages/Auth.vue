@@ -27,7 +27,7 @@ const authHandler = async () => {
   if(!(await validation.value?.validate())) return
   authStore.auth(route.name, form.value).then(() => {
     toast.success({text: "Tizimga muvaffaqqiyatli kirildi"});
-    router.push({name: "products"}).then(() => {
+    router.push(route?.query?.redirectUrl ??  {name: "products"}).then(() => {
       clear();
     });
   }).catch((error:any) => {

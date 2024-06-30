@@ -4,7 +4,7 @@ import {ref} from "vue";
 import type {LoginDataType, RegisterDataType, User} from "@/types/auth.type";
 import {setAccessToken, removeAccessToken, setItem, getItem, removeItem} from "@/utils/local.storage";
 import authApi from "@/api/auth.api";
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import useToast from "@/components/ui/app-toast/useToast";
 
 export const useAuthStore = defineStore('auth', () => {
@@ -12,6 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
     const isLoading:Ref<boolean> = ref(false);
     const user:Ref<User | {}> = ref({});
     const router = useRouter();
+    const route  = useRoute();
     const {toast} = useToast();
 
     const auth = async (type: 'login' | 'register', data: LoginDataType | RegisterDataType) => {
@@ -53,7 +54,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = {};
         removeAccessToken();
         removeItem(tokenExpirationTimeKey);
-        router.replace({path: "/login"});
+        router.replace({path: "/login", query: {redirect: route.fullPath}});
     }
 
     const refresh = async ():Promise<void> => {
@@ -71,9 +72,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     const tokenExpirationTimeKey: 'token_expiration_time' = 'token_expiration_time'
 
-    const setTokenExpiration = (time: number): number => {
+    const setTokenExpiration = (time: number): void => {
         const newExpirationTime:number = new Date().getTime() + time;
-        setItem(tokenExpirationTimeKey, newExpirationTime);
+        setItem(tokenExpirationTimeKey, String(newExpirationTime));
     }
 
     const isTokenExpired = ():boolean => {

@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 import type {
+    BrandType,
     CategoryType,
     CategoryWidthBrandType,
     ProductsParams,
@@ -27,6 +28,7 @@ export const useProductStore = defineStore("product", () => {
     });
     const hasProductsData = computed<boolean>(() => {
         if (Object.keys(products.value).length > 0) return products.value?.data?.length > 0;
+        return false;
     });
 
     const fetchProducts = (params:ProductsParams = {}) => {
@@ -88,7 +90,33 @@ export const useProductStore = defineStore("product", () => {
 
     const categories = ref<CategoryType[]>([]);
     const categoriesLoading = ref(false);
-    // const hasCate
+    const hasCategories = computed<boolean>(() => {
+        return categories.value.length > 0;
+    });
+
+    const fetchCategories = async ():Promise<void> => {
+        categoriesLoading.value = true;
+        await productApi.fetchCategories().then(response => {
+            categories.value = response;
+        }).finally(() => {
+            categoriesLoading.value = false;
+        })
+    }
+
+    const brands = ref<BrandType[]>([]);
+    const brandsLoading = ref<boolean>(false);
+    const hasBrands = computed<boolean>(() => {
+        return brands.value.length > 0;
+    });
+
+    const fetchBrands = async (categoryId:number):Promise<void> => {
+        brandsLoading.value = true;
+        await productApi.fetchBrands(categoryId).then(response => {
+            brands.value = response;
+        }).finally(()=> {
+            brandsLoading.value = false;
+        })
+    }
 
     return {
         productsLoading,
@@ -103,6 +131,13 @@ export const useProductStore = defineStore("product", () => {
         product,
         hasProduct,
         productLoading,
-        fetchProduct
+        fetchProduct,
+        categories,
+        categoriesLoading,
+        hasCategories,
+        fetchCategories,
+        brands,
+        brandsLoading,
+        fetchBrands
     }
 });

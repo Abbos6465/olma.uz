@@ -2,9 +2,9 @@
 import {generateRandomID} from "@/utils/helper";
 import {computed, ref, type Ref, useSlots} from "vue";
 import {vMaska} from "maska";
-import type {FormItemType, FormRulesType, FormRulesVType} from "@/components/ui/forms/form.types";
+import type {FormItemType, FormRulesVType} from "@/components/ui/forms/form.types";
 
-type ValueType = string | number;
+type ValueType = string | number | null | undefined;
 
 interface PropsType extends FormItemType {
   type?: string,
@@ -43,29 +43,35 @@ const appendInnerClick = () => {
   showPassword.value = !showPassword.value;
 }
 
-const computedAppendIcon = computed<string>(() => {
+const computedAppendIcon = computed<string | void>(() => {
   if(props.type !== 'password' && props.appendIcon) return props.appendIcon;
-  return showPassword.value ? 'mdi-eye-off' : 'mdi-eye'
+  else if (props.type === 'password') return showPassword.value ? 'mdi-eye-off' : 'mdi-eye';
 });
 
-const computedRules = computed<FormRulesType>(() => {
-  const rules:FormRulesType = [];
+type RulesType = ((v: FormRulesVType) => boolean | string)[];
+
+const computedRules = computed<RulesType>(() => {
+  const rules: RulesType = [];
   if(props.required){
     rules.push(
-        (v: FormRulesVType) => (props.type === 'text' && typeof (v) === 'string') ? !!v?.trim() : !!v || "To'ldirish majburiy maydon"
+        (v: ValueType) => {
+          if (props.type === 'text' && typeof (v) === 'string') return !!v.trim() || "To'ldirish majburiy maydon";
+          else return !!v || "To'ldirish majburiy maydon";
+        }
     )
   }
   if(props.type === 'email'){
     rules.push(
-        (v: FormRulesVType) =>  checkEmail(v) || "Noto'g'ri elektron pochta manzili"
+        (v: ValueType) => checkEmail(v) || "Noto'g'ri elektron pochta manzili"
     )
   }
 
+
   if (!!props.min){
     rules.push(
-        (v: FormRulesVType) => {
-          if (typeof v === 'string') return v.length >= props.min || `Maydon kamida ${props.min} ta belgidan iborat bo'lishi kerak`;
-          else return v >= props.min || `Son kamida ${props.min} shu songa teng bo'lishi kerak`;
+        (v): any => {
+          if (typeof v === 'string') return v.length >= (props.min as number) || `Maydon kamida ${props.min} ta belgidan iborat bo'lishi kerak`;
+          else if (typeof v === 'number') return v >= (props.min as number) || `Son kamida ${props.min} shu songa teng bo'lishi kerak`;
         }
     );
   }
@@ -76,7 +82,7 @@ const computedRules = computed<FormRulesType>(() => {
 const checkEmail = (value?: FormRulesVType): boolean => {
   if (!value || (value && typeof(value) === 'string')) return false;
   const regex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(value?.trim());
+  return regex.test((value as string)?.trim());
 }
 
 const keyupEnterEvent = () => {
@@ -130,23 +136,3 @@ const keyupEnterEvent = () => {
     </VTextField>
   </div>
 </template>
-
-<style lang="scss">
-  .app-input{
-    &__input{
-      .v-input{
-        &__details{
-          padding-inline: 0;
-          padding: 0;
-          min-height: unset;
-        }
-      }
-
-      .v-messages{
-        &__message{
-          padding: 5px 0 12px;
-        }
-      }
-    }
-  }
-</style>

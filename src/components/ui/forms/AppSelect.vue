@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type {FormItemType, FormRulesType, FormRulesVType} from "@/components/ui/forms/form.types";
 import {generateRandomID} from "@/utils/helper";
-import {computed, useSlots} from "vue";
+import {computed, useSlots, watch} from "vue";
 
 const randomId:string = generateRandomID();
 
-type ValueType = string | number | (string | number)[] | {};
+type ValueType = string | number | null | undefined | (string | number)[] | {};
 
 interface PropsType extends FormItemType {
   value?: ValueType;
@@ -18,24 +18,40 @@ interface PropsType extends FormItemType {
 
 const model = defineModel<ValueType>();
 
+const emit = defineEmits<{
+  change: [value: ValueType]
+}>();
+
 const props = withDefaults(defineProps<PropsType>(),{
   density: 'compact',
   color: 'primary',
+  placeholder: "Tanlang"
 });
 
 const slots = useSlots();
 
-const computedRules = computed<FormRulesType>(() => {
-  const rules: FormRulesType = [];
+type RulesType = (v: FormRulesVType) => boolean | string;
+
+const computedRules = computed<RulesType[]>(() => {
+  const rules: RulesType[] = [];
 
   if (props.required) {
     rules.push(
-        (v: FormRulesVType & {}) => typeof(v) === 'object' ? !!Object.keys(v).length : !!v || "To'ldirish majburiy maydon"
+        (v: RulesType) => {
+          if (v && typeof v === 'object') {
+            return !!Object.keys(v).length || "To'ldirish majburiy maydon";
+          }
+          return !!v || "To'ldirish majburiy maydon";
+        }
     )
   }
 
   return rules;
 });
+
+watch(model, (newValue) => {
+  emit("change", newValue);
+})
 
 </script>
 
@@ -63,6 +79,9 @@ const computedRules = computed<FormRulesType>(() => {
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
+      :items="items"
+      :item-value="itemValue"
+      :item-title="itemTitle"
       :rules="computedRules"
       :required="required"
       variant="outlined"

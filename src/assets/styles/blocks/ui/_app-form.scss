@@ -17,5 +17,16 @@
         color: red;
       }
     }
+
+    .v-input{
+      &__details{
+        padding-inline: 0 !important;
+        padding: 0;
+        min-height: unset;
+      }
+    }
+    .v-messages__message{
+        padding: 5px 0 12px;
+    }
   }
 }

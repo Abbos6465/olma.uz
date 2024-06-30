@@ -13,9 +13,9 @@ const validation = defineModel<ValidationType>('validation', {
   default: {}
 });
 
-const validate = async (): Promise<boolean> => {
+const validate = async (): Promise<boolean> | boolean => {
   if (!appForm.value) return false;
-  
+
   const {valid} = await appForm.value?.validate();
   return valid;
 }
@@ -46,3 +46,5 @@ onMounted(() => {
     <slot/>
   </VForm>
 </template>
+
+

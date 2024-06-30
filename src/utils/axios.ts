@@ -4,8 +4,6 @@ import {useAuthStore} from "@/stores/auth.store";
 import {getAccessToken} from "@/utils/local.storage";
 import useToast from "@/components/ui/app-toast/useToast";
 import {generateRandomID} from "@/utils/helper";
-import authApi from "@/api/auth.api";
-
 const id = generateRandomID();
 
 const {toast, items,} = useToast();

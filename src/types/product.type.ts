@@ -1,10 +1,10 @@
 export interface ProductDataType {
-    category_id: number,
-    brand_id: number,
+    category_id: number | null,
+    brand_id?: number | null,
     title: string,
-    price: number,
+    price?: number | null,
     content: string,
-    photo: File
+    photo: File | null
 }
 
 export interface BrandType {
