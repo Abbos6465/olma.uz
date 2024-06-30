@@ -10,7 +10,7 @@ import useToast from "@/components/ui/app-toast/useToast";
 export const useAuthStore = defineStore('auth', () => {
     const isAuth:Ref<boolean> = ref(false);
     const isLoading:Ref<boolean> = ref(false);
-    const user:Ref<User> = ref({});
+    const user:Ref<User | {}> = ref({});
     const router = useRouter();
     const {toast} = useToast();
 

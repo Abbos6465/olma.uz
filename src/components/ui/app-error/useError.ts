@@ -1,7 +1,8 @@
-import {ref} from "vue";
+import {Ref, ref} from "vue";
 
 
-interface ErrorType {
+type ErrorType = {
+    status?: number;
     headline?: string,
     title?: string,
     text?: string,
@@ -13,11 +14,10 @@ interface ServerErrorType {
     statusText: string
 }
 
-type useErrorType = {
-    setError: (error: ErrorType) => void,
-    error: ErrorType,
-    hasError: boolean,
-    status: number,
+interface useErrorType {
+    setError: (newError: ErrorType) => void,
+    error: Ref<ErrorType>,
+    hasError: Ref<boolean>,
     clear: () => void,
     setNotFoundError: () => void,
     setServerError: (error: ServerErrorType) => void
@@ -47,12 +47,11 @@ export default (): useErrorType => {
         });
     }
 
-    const setServerError = (error: ServerErrorType): void => {
-        const {status} = error;
+    const setServerError = (newError: ServerErrorType): void => {
         setError({
-            status: status,
-            headline: `Error status ${status}`,
-            title: error.statusText,
+            status: newError.status,
+            headline: `Error status ${newError.status}`,
+            title: newError.statusText,
             text: "Serverda muammo sodir bo'ldi"
         })
     }

@@ -5,8 +5,8 @@ const localeKey:'locale' = 'locale';
 const getLocalStorageLocale: string = getItem(localeKey);
 export const availableLocales: string[] = ['uz', 'ru'];
 
-const hasLocale = (locale:string): boolean => {
-    return locale && availableLocales.includes(locale);
+const hasLocale = (locale?:string): boolean => {
+    return !!(locale && availableLocales.includes(locale));
 }
 
 export const activeLocale:string = hasLocale(getLocalStorageLocale) ? getLocalStorageLocale : 'uz';

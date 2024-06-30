@@ -45,7 +45,7 @@ export default () => {
     const init = (params: InitParamsType): string => {
         const id: string = params?.id ?? generateRandomID();
 
-        if (items.find(el => el.id === id)) return
+        if (items.find(el => el.id === id)) return "";
 
         items.push({
             id,
@@ -61,8 +61,8 @@ export default () => {
     }
 
     const deleteFunction = (id: string) => {
-        const itemCollections = document.querySelectorAll('.app-toast__item');
-        const foundedItem = Array.from(itemCollections).find((el: HTMLElement) => el.id === id);
+        const itemCollections:NodeListOf<HTMLDivElement> = document.querySelectorAll('.app-toast__item');
+        const foundedItem:HTMLDivElement | undefined = Array.from(itemCollections).find((el: HTMLElement) => el.id === id);
 
         if (foundedItem) {
             const isHovered = foundedItem.getAttribute('isHovered');
