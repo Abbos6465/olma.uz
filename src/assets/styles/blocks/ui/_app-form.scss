@@ -25,8 +25,12 @@
         min-height: unset;
       }
     }
-    .v-messages__message{
+    .v-messages {
+      min-height: 5px;
+
+      &__message {
         padding: 5px 0 12px;
+      }
     }
   }
 }

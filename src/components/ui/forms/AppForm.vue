@@ -3,8 +3,8 @@ import {onMounted, ref} from "vue";
 
 const appForm = ref<HTMLFormElement | null>(null);
 
-export interface ValidationType {
-  validate?: () => Promise<boolean>,
+export type ValidationType = {} | {
+  validate?: () => Promise<boolean> | boolean,
   clearValidate?: ()=> void,
   clearForm?: () => void
 }

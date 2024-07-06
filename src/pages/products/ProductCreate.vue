@@ -7,6 +7,7 @@ import AppForm, {type ValidationType} from "@/components/ui/forms/AppForm.vue";
 import type {ProductDataType} from "@/types/product.type";
 import AppInput from "@/components/ui/forms/AppInput.vue";
 import AppTextarea from "@/components/ui/forms/AppTextarea.vue";
+import AppAvatarUploader from "@/components/ui/forms/AppAvatarUploader.vue";
 
 const productStore = useProductStore();
 
@@ -44,7 +45,7 @@ const createProduct = async () => {
 }
 
 </script>
-
+`
 <template>
   <section>
     <Breadcrumbs
@@ -57,6 +58,11 @@ const createProduct = async () => {
             v-model:validation="validation"
             class="product-create__form v-row v-row--dense"
         >
+          <AppAvatarUploader
+            label="Mahsulot rasmi"
+            class="product-create__form-item v-col-12"
+            required
+          />
           <AppSelect
               v-model="form.category_id"
               :items="productStore.categories"

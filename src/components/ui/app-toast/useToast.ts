@@ -12,7 +12,7 @@ const items: Toast[] = reactive([]);
 
 interface ToastParamsType {
     id?: string,
-    text: string,
+    text: any,
     duration?: number,
 }
 

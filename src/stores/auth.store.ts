@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuth.value = false;
         isLoading.value = true;
         try{
-            const response = await (type === 'login' ? authApi.login(data) : authApi.register(data));
+            const response = await (type === 'login' ? authApi.login(data as LoginDataType) : authApi.register(data as RegisterDataType));
             isAuth.value = true;
             setAccessToken(response.access_token);
             setTokenExpiration(response.expires_in);
