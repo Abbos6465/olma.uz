@@ -60,13 +60,26 @@ onMounted(() => {
   if(getAccessToken()) authStore.clearUser();
 });
 
+const post = async () => {
+  const data = {
+    "email": "ahrororzimurodov31@gmail,com",
+    "password": 1234
+  }
+
+  await axios.post("http://45.138.158.113:8081/auth/login", data).then(function (response) {
+    console.log(response)
+  }).catch(function (error) {
+    console.log(error);
+  })
+}
+
 </script>
 
 <template>
   <section class="auth-section">
     <div class="container">
       <div class="auth">
-        <v-card
+        <VCard
             :title="route.name === 'login' ? 'Tizimga kirish' : `Ro'yxatdan o'tish`"
             subtitle="olma.uz"
             class="mx-auto pa-8 pb-8 auth-card"
@@ -104,7 +117,7 @@ onMounted(() => {
                 :hint="setErrorHint(validationErrors?.password)"
                 required
             />
-            <v-btn
+            <VBtn
                 class="mb-8"
                 color="blue"
                 size="large"
@@ -114,18 +127,29 @@ onMounted(() => {
                 @click="authHandler"
             >
               {{ route.name === 'login' ? "Kirish" : "Ro'yxatdan o'tish" }}
-            </v-btn>
+            </VBtn>
+            <VBtn
+                class="mb-8"
+                color="blue"
+                size="large"
+                :loading="authStore.isLoading"
+                variant="tonal"
+                block
+                @click="authHandler"
+            >
+              {{ route.name === 'login' ? "Kirish" : "Ro'yxatdan o'tish" }}
+            </VBtn>
           </AppForm>
-          <v-card-text class="text-center">
+          <VCardText class="text-center">
             <RouterLink
                 :to="{name: route.name === 'login' ? 'register' : 'login'}"
                 class="text-blue text-decoration-none"
             >
               {{ route.name === 'login' ? "Ro'yxatdan o'tish" : "Kirish" }}
-              <v-icon icon="mdi-chevron-right"></v-icon>
+              <VIcon icon="mdi-chevron-right"/>
             </RouterLink>
-          </v-card-text>
-        </v-card>
+          </VCardText>
+        </VCard>
       </div>
     </div>
   </section>
