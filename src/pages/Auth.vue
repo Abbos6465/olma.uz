@@ -118,18 +118,7 @@ const post = async () => {
                 required
             />
             <VBtn
-                class="mb-8"
-                color="blue"
-                size="large"
-                :loading="authStore.isLoading"
-                variant="tonal"
-                block
-                @click="authHandler"
-            >
-              {{ route.name === 'login' ? "Kirish" : "Ro'yxatdan o'tish" }}
-            </VBtn>
-            <VBtn
-                class="mb-8"
+                class="mb-8 mt-5"
                 color="blue"
                 size="large"
                 :loading="authStore.isLoading"
